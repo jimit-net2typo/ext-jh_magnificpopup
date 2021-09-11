@@ -233,10 +233,9 @@ class MagnificpopupController extends ActionController
                     ->select('pid')
                     ->from('tt_content')
                     ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
-                    ))->execute()->fetchOne();
-
-                if(MathUtility::canBeInterpretedAsInteger($pid)) {
-                    $pidInList[] = $pid;
+                    ))->execute()->fetchAll();
+                foreach ($pid as $pidValue){
+                    $pidInList[] .= $pidValue['pid'];
                 }
             }
             // Configure the link

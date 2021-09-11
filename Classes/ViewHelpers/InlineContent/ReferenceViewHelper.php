@@ -59,21 +59,21 @@ class ReferenceViewHelper extends AbstractInlineContentViewHelper
                 ->select('pid')
                 ->from('tt_content')
                 ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)
-                ))->execute()->fetchOne();
+                ))->execute()->fetchAll();
 
-            if(MathUtility::canBeInterpretedAsInteger($pid)) {
-                $contentPids[] = $pid;
+            foreach ($pid as $pidValue){
+                $contentPids[] .= $pidValue['pid'];
             }
 
         }
         $contentPids = array_unique($contentPids);
 
         // Get records
-        $records = $this->getRecords([
-            'uidInList' => $this->arguments['contentUids'],
-            'pidInList' => '-1,' . implode(',', $contentPids),
-            'includeRecordsWithoutDefaultTranslation' => !$this->arguments['hideUntranslated']
-        ]);
+        $records = $queryBuilder
+                    ->select('*')
+                    ->from('tt_content')
+                    ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($this->arguments['contentUids'], \PDO::PARAM_INT)
+                    ))->execute()->fetchAll();
         if (empty($records)) {
             return '';
         }
